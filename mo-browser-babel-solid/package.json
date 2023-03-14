@@ -1,0 +1,13 @@
+{
+  "name": "mo-browser-babel-solid",
+  "version": "1.0.0",
+  "description": "A browser solid plugin",
+  "keywords": [
+    "browser",
+    "babel",
+    "solid"
+  ],
+  "main": "index.js",
+  "author": "Mobcn",
+  "license": "ISC"
+}
