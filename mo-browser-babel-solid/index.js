@@ -68,23 +68,23 @@ export const resolveJSX = (() => {
      * @returns {Promise<string>}
      */
     return (url) => {
-        if (cacheMappingURL[url]) {
-            return Promise.resolve(cacheMappingURL[url]);
-        }
-        return fetch(url)
-            .then((res) => res.text())
-            .then((text) => {
-                /**  @type {[string, string][]} */
-                const promiseArr = [];
-                const presets = ['solid'];
-                const plugins = [['http-import-replace', { currentURL: url, promiseArr }]];
-                let code = Babel.transform(text, { presets, plugins }).code;
-                return Promise.all(promiseArr).then((resList) => {
-                    for (const [srcURL, desURL] of resList) {
-                        code = code.replaceAll(srcURL, desURL);
-                    }
-                    return URL.createObjectURL(new Blob([code], { type: 'text/javascript' }));
+        if (!cacheMappingURL[url]) {
+            cacheMappingURL[url] = fetch(url)
+                .then((res) => res.text())
+                .then((text) => {
+                    /**  @type {[string, string][]} */
+                    const promiseArr = [];
+                    const presets = ['solid'];
+                    const plugins = [['http-import-replace', { currentURL: url, promiseArr }]];
+                    let code = Babel.transform(text, { presets, plugins }).code;
+                    return Promise.all(promiseArr).then((resList) => {
+                        for (const [srcURL, desURL] of resList) {
+                            code = code.replaceAll(srcURL, desURL);
+                        }
+                        return URL.createObjectURL(new Blob([code], { type: 'text/javascript' }));
+                    });
                 });
-            });
+        }
+        return cacheMappingURL[url];
     };
 })();
